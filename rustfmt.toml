@@ -1,0 +1,6 @@
+indent_style = "Block"
+reorder_imports = true
+array_width = 60
+binop_separator = "Front"
+chain_width = 60
+max_width = 80
