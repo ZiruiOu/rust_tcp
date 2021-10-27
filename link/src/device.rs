@@ -1,6 +1,7 @@
 use super::common::ipaddrs::IpAddress;
 use super::common::macaddr::MacAddress;
 use pcap::{Capture, Device};
+use pnet::datalink::{self, NetworkInterface};
 
 pub struct Device {
     device_name: String,
@@ -40,12 +41,35 @@ impl Device {
         }
     }
 
-    // TODO: add definition for these two functions
     fn init_mac_address(name: &str, mac_addr: &mut MacAddress) {
-        // naive implementation using utilities.
+        let netif = datalink::interfaces()
+            .into_iter()
+            .filter(|iface: &NetworkInterface| iface.name == name)
+            .next()
+            .expect("init_mac_address: device not found.");
+
+        match netif.mac {
+            Some(address) => {
+                mac_addr = MacAddress::from(address.octets());
+            }
+            None => {
+                panic!("init_mac_address: device mac address doesn't exist.");
+            }
+        }
     }
 
     fn init_ip_address(name: &str, ip_addr: &mut IpAddress) {
         // naive implementation using utilities.
+        let netif = datalink::interfaces()
+            .filter(|iface: &NetworkInterface| iface.name == name)
+            .next()
+            .expect("init_ip_address: device nnot found.");
+
+        for network in netif.ips.iter() {
+            if let V4(ipv4_network) = network {
+                ip_addr = IpAddress::from(ipv4_network.ip().octets());
+                return;
+            }
+        }
     }
 }
