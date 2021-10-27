@@ -5,6 +5,7 @@ use pcap::{self, Active, Capture};
 use pnet::datalink::{self, NetworkInterface};
 use pnet::ipnetwork::IpNetwork;
 
+#[allow(dead_code)]
 pub struct Device {
     device_name: String,
     pcap_handler: Capture<Active>,
@@ -12,6 +13,7 @@ pub struct Device {
     ip_addr: IpAddress,
 }
 
+#[allow(dead_code)]
 impl Device {
     pub fn new(name: &str) -> Self {
         let mut handler = Capture::from_device(name)
