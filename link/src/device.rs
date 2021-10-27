@@ -76,6 +76,8 @@ impl Device {
                 return;
             }
         }
+
+        panic!("init_ip_address: device ip address doesn't exist.");
     }
 
     pub fn send_frame(

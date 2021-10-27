@@ -20,8 +20,12 @@ fn main() {
             let mut sender = Device::new(device_name);
             let dest_mac =
                 MacAddress::from_str(inputs.next().unwrap()).unwrap();
-            let message = String::from("Hello, how are you?");
-            sender.send_frame(&message, 0x2333, &dest_mac).unwrap();
+            let message =
+                format!("Hello, how are you? Greetting from {}", device_name);
+            sender.send_frame(&message, 0x2333, &dest_mac).expect(
+                format!("send_frame: {} send frame fail.", device_name)
+                    .as_str(),
+            );
         }
         _ => {
             let mut receiver = Device::new(device_name);
