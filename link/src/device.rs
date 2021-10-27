@@ -45,6 +45,10 @@ impl Device {
         }
     }
 
+    pub fn device_name(&self) -> &String {
+        &(*self).device_name
+    }
+
     fn init_mac_address(name: &str, mac_addr: &mut MacAddress) {
         let netif = datalink::interfaces()
             .into_iter()
@@ -63,7 +67,6 @@ impl Device {
     }
 
     fn init_ip_address(name: &str, ip_addr: &mut IpAddress) {
-        // naive implementation using utilities.
         let netif = datalink::interfaces()
             .into_iter()
             .filter(|iface: &NetworkInterface| iface.name == name)
@@ -111,6 +114,16 @@ impl Device {
         buffer.extend_from_slice((*message).as_bytes());
 
         buffer
+    }
+
+    pub fn execute_callback(
+        &mut self,
+        callback: &fn(&[u8], usize) -> Result<(), pcap::Error>,
+    ) -> Result<(), pcap::Error> {
+        if let Ok(packet) = (*self).pcap_handler.next() {
+            (*callback)(packet.data, packet.header.caplen as usize)?;
+        }
+        Ok(())
     }
 
     pub fn receive_poll(&mut self) {

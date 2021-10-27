@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 common = { path = "common", version = "0.1.0" }
 link = { path = "link", version = "0.1.0" }
+pcap = { version = "0.9", features = ["capture-stream"] }
