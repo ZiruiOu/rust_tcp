@@ -1,3 +1,4 @@
+use super::frame::Frame;
 use common::ipaddr::IpAddress;
 use common::macaddr::MacAddress;
 use core::result::Result;
@@ -89,31 +90,12 @@ impl Device {
         ethernet_type: u16,
         dest_mac: &MacAddress,
     ) -> Result<(), pcap::Error> {
-        let buffer = Device::create_frame(
-            &(*self).mac_addr,
-            dest_mac,
-            ethernet_type,
-            message,
-        );
-        (*self).pcap_handler.sendpacket(buffer.as_slice())?;
+        let mut frame =
+            Frame::new(dest_mac, &(*self).mac_addr, ethernet_type, message, 0);
+        (*self)
+            .pcap_handler
+            .sendpacket(frame.to_buffer().as_slice())?;
         Ok(())
-    }
-
-    fn create_frame(
-        src_mac: &MacAddress,
-        dest_mac: &MacAddress,
-        ethernet_type: u16,
-        message: &String,
-    ) -> Vec<u8> {
-        let mut buffer = Vec::<u8>::new();
-        let mut type_buffer = u16::to_be_bytes(ethernet_type);
-
-        buffer.extend_from_slice(dest_mac.as_slice());
-        buffer.extend_from_slice(src_mac.as_slice());
-        buffer.extend_from_slice(&mut type_buffer);
-        buffer.extend_from_slice((*message).as_bytes());
-
-        buffer
     }
 
     pub fn execute_callback(
